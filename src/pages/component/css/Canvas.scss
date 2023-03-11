@@ -1,0 +1,19 @@
+.result {
+    position: relative;
+    width: 100vw;
+    // height: 1038px;
+
+    overflow: hidden;
+
+    background-color: #282c34;
+}
+
+canvas {
+    position: relative;
+    display: block;
+    height: 100%;
+    width: 100vw;
+    touch-action: none;
+
+    box-sizing: border-box;
+}
