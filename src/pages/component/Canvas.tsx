@@ -233,7 +233,7 @@ const Canvas = ({ src }: CanvasProps) => {
             canvas.height = img.height;
             ctx.drawImage(img, 0, 0, img.width / 2, img.height / 2);
             setImage(img);
-            setLastMousePos({
+            setImageRange({
                 left: 0,
                 right: img.width / 2,
                 top: 0,
@@ -245,7 +245,7 @@ const Canvas = ({ src }: CanvasProps) => {
 
     // drag Canvas
     const [isDragging, setIsDragging] = useState(false);
-    const [lastMousPos, setLastMousePos] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
+    const [imageRange, setImageRange] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -264,18 +264,22 @@ const Canvas = ({ src }: CanvasProps) => {
                     return;
                 }
 
+
                 const canvasRect = canvas.getBoundingClientRect();
+                // console.log(canvasX, canvasY);
                 // 滑鼠在 canvas 上的座標
                 const mouseCanvasX = ((e.clientX - canvasRect.left) / canvasRect.width) * canvas.width;
                 const mouseCanvasY = ((e.clientY - canvasRect.top) / canvasRect.height) * canvas.height;
+
+
                 // 如果在圖片範圍內，才動
-                if (mouseCanvasX > lastMousPos.left && mouseCanvasX < lastMousPos.right && mouseCanvasY > lastMousPos.top && mouseCanvasY < lastMousPos.bottom) {
+                if (mouseCanvasX > imageRange.left && mouseCanvasX < imageRange.right && mouseCanvasY > imageRange.top && mouseCanvasY < imageRange.bottom) {
                     requestAnimationFrame(() => {
                         ctx.clearRect(0, 0, canvas.width, canvas.height);
                         // 以滑鼠為中心，繪製圖片
-                        ctx.drawImage(image, mouseCanvasX - image.width / 4, mouseCanvasY - image.height / 4, image.width / 2, image.height / 2)                        
+                        ctx.drawImage(image, mouseCanvasX - image.width / 4, mouseCanvasY - image.height / 4, image.width / 2, image.height / 2)
                     });
-                    setLastMousePos({
+                    setImageRange({
                         left: mouseCanvasX - image.width / 4,
                         right: mouseCanvasX + image.width / 4,
                         top: mouseCanvasY - image.height / 4,
@@ -284,11 +288,28 @@ const Canvas = ({ src }: CanvasProps) => {
                 }
 
 
+                // 有趣辦本
+                // if (mouseCanvasX > imageRange.left && mouseCanvasX < imageRange.right && mouseCanvasY > imageRange.top && mouseCanvasY < imageRange.bottom) {
+                //     requestAnimationFrame(() => {
+                //         ctx.clearRect(0, 0, canvas.width, canvas.height);
+                //         // 以滑鼠為中心，繪製圖片
+                //         ctx.drawImage(image, imageRange.left, imageRange.top, imageRange.right - imageRange.left, imageRange.bottom - imageRange.top, mouseCanvasX - image.width / 4, mouseCanvasY - image.height / 4, image.width / 2, image.height / 2)
+                //     });
+                //     setImageRange({
+                //         left: mouseCanvasX - image.width / 4,
+                //         right: mouseCanvasX + image.width / 4,
+                //         top: mouseCanvasY - image.height / 4,
+                //         bottom: mouseCanvasY + image.height / 4,
+                //     });
+                // }
+
+
+
             }
         };
 
         const handleMouseUp = () => {
-            setIsDragging(false);           
+            setIsDragging(false);
         };
 
         // 如果滑鼠移出視窗，就停止拖移
@@ -296,10 +317,10 @@ const Canvas = ({ src }: CanvasProps) => {
             setIsDragging(false);
         };
 
-
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
         document.addEventListener("mouseleave", handleMouseLeave);
+
 
         return () => {
             document.removeEventListener("mousemove", handleMouseMove);
@@ -307,7 +328,7 @@ const Canvas = ({ src }: CanvasProps) => {
             document.removeEventListener("mouseleave", handleMouseLeave);
 
         };
-    }, [image, isDragging, lastMousPos.bottom, lastMousPos.left, lastMousPos.right, lastMousPos.top]);
+    }, [image, isDragging, imageRange.bottom, imageRange.left, imageRange.right, imageRange.top]);
 
 
     // 當滑鼠在 線 上按下時，就開始拖移
