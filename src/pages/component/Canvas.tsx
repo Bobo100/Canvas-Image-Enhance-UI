@@ -291,12 +291,33 @@ const Canvas = ({ src }: CanvasProps) => {
                         setFirstDrag(false);
                     }
 
+
                     requestAnimationFrame(() => {
                         ctx.clearRect(0, 0, canvas.width, canvas.height);
                         // 圖片左上角的座標 + 滑鼠移動的距離
                         ctx.drawImage(image, imageRange.left, imageRange.top, imageRange.right - imageRange.left, imageRange.bottom - imageRange.top);
 
                     });
+                    // 如果 圖片左上角的座標 + 滑鼠移動的距離 < 0 就把滑鼠移動的距離設為 0
+                    if (imageRange.left + deltaX < 0) {
+                        deltaX = -imageRange.left;
+                    }
+                    if (imageRange.top + deltaY < 0) {
+                        deltaY = -imageRange.top;
+                    }
+                    // 如果 圖片右下角的座標 + 滑鼠移動的距離 > canvas 範圍 就把滑鼠移動的距離設為 canvas 範圍 - 圖片右下角的座標
+                    // 但說穿了就是圖片不能超過 canvas 範圍
+                    // 也可以說deltaX 會等於0 
+                    if (imageRange.right + deltaX > canvas.width) {
+                        deltaX = 0;
+                        // deltaX = canvas.width - imageRange.right;
+                    }
+                    if (imageRange.bottom + deltaY > canvas.height) {
+                        deltaY = 0;
+                        // deltaY = canvas.height - imageRange.bottom;
+                    }
+
+
                     setImageRange({
                         left: imageRange.left + deltaX,
                         right: imageRange.right + deltaX,
