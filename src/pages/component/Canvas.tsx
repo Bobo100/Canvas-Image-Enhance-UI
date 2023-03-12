@@ -246,6 +246,10 @@ const Canvas = ({ src }: CanvasProps) => {
     // drag Canvas
     const [isDragging, setIsDragging] = useState(false);
     const [imageRange, setImageRange] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
+    // 紀錄最後一次的滑鼠座標 目的是為了計算滑鼠移動的距離
+    const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
+    // 確認是第一次拖移
+    const [firstDrag, setFirstDrag] = useState(true);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -255,15 +259,17 @@ const Canvas = ({ src }: CanvasProps) => {
             if (!ctx) return;
 
             if (isDragging && image) {
-                // 如果超過左邊界，就不動
-                if (e.clientX < 0) {
-                    return;
-                }
-                // 如果超過右邊界，就不動
-                if (e.clientX > window.innerWidth - 1) {
+
+                // 滑鼠不能超過視窗範圍
+                if (e.clientX < 0 || e.clientX > window.innerWidth - 1 || e.clientY < 0 || e.clientY > window.innerHeight - 1) {
                     return;
                 }
 
+                // 圖片不能超過 canvas 範圍 如果超過了 就以 canvas 範圍為主
+                console.log(imageRange)
+                if (imageRange.left < 0 || imageRange.right > canvas.width || imageRange.top < 0 || imageRange.bottom > canvas.height) {
+                    return;
+                }
 
                 const canvasRect = canvas.getBoundingClientRect();
                 // console.log(canvasX, canvasY);
@@ -271,22 +277,34 @@ const Canvas = ({ src }: CanvasProps) => {
                 const mouseCanvasX = ((e.clientX - canvasRect.left) / canvasRect.width) * canvas.width;
                 const mouseCanvasY = ((e.clientY - canvasRect.top) / canvasRect.height) * canvas.height;
 
-
                 // 如果在圖片範圍內，才動
                 if (mouseCanvasX > imageRange.left && mouseCanvasX < imageRange.right && mouseCanvasY > imageRange.top && mouseCanvasY < imageRange.bottom) {
+                    // 滑鼠移動的距離
+                    let deltaX = mouseCanvasX - lastMousePosition.x;
+                    let deltaY = mouseCanvasY - lastMousePosition.y;
+
+                    // 第一次拖移
+                    if (firstDrag) {
+                        deltaX = 0;
+                        deltaY = 0;
+                        setLastMousePosition({ x: mouseCanvasX, y: mouseCanvasY });
+                        setFirstDrag(false);
+                    }
+
                     requestAnimationFrame(() => {
                         ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        // 以滑鼠為中心，繪製圖片
-                        ctx.drawImage(image, mouseCanvasX - image.width / 4, mouseCanvasY - image.height / 4, image.width / 2, image.height / 2)
+                        // 圖片左上角的座標 + 滑鼠移動的距離
+                        ctx.drawImage(image, imageRange.left, imageRange.top, imageRange.right - imageRange.left, imageRange.bottom - imageRange.top);
+
                     });
                     setImageRange({
-                        left: mouseCanvasX - image.width / 4,
-                        right: mouseCanvasX + image.width / 4,
-                        top: mouseCanvasY - image.height / 4,
-                        bottom: mouseCanvasY + image.height / 4,
+                        left: imageRange.left + deltaX,
+                        right: imageRange.right + deltaX,
+                        top: imageRange.top + deltaY,
+                        bottom: imageRange.bottom + deltaY,
                     });
+                    setLastMousePosition({ x: mouseCanvasX, y: mouseCanvasY });
                 }
-
 
                 // 有趣辦本
                 // if (mouseCanvasX > imageRange.left && mouseCanvasX < imageRange.right && mouseCanvasY > imageRange.top && mouseCanvasY < imageRange.bottom) {
@@ -310,11 +328,15 @@ const Canvas = ({ src }: CanvasProps) => {
 
         const handleMouseUp = () => {
             setIsDragging(false);
+            // 重置
+            setFirstDrag(true);
         };
 
         // 如果滑鼠移出視窗，就停止拖移
         const handleMouseLeave = () => {
             setIsDragging(false);
+            // 重置
+            setFirstDrag(true);
         };
 
         document.addEventListener("mousemove", handleMouseMove);
@@ -328,12 +350,15 @@ const Canvas = ({ src }: CanvasProps) => {
             document.removeEventListener("mouseleave", handleMouseLeave);
 
         };
-    }, [image, isDragging, imageRange.bottom, imageRange.left, imageRange.right, imageRange.top]);
+    }, [firstDrag, image, imageRange, isDragging, lastMousePosition.x, lastMousePosition.y]);
 
 
     // 當滑鼠在 線 上按下時，就開始拖移
     const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
         setIsDragging(true);
+        // 重製
+        setFirstDrag(true);
+        console.log("---------------------------------------------")
     };
 
 
