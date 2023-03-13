@@ -1,3 +1,3 @@
-# cra-template-boboReactTypeScript
+# Canvas-Image-Enhance-UI
 
-存放個人的基礎設定檔案 (測試版)
+製作現在很流行的 圖片左右對比 網頁
