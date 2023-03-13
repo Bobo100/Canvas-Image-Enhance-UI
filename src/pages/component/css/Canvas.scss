@@ -1,11 +1,12 @@
 .result {
     position: relative;
-    width: 100vw;
-    // height: 1038px;
-
+    // width: 100vw;
+    height: 1038px;
     overflow: hidden;
 
     background-color: #282c34;
+
+    box-sizing: border-box;
 }
 
 canvas {
