@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Canvas-Image-Enhance-UI/static/css/main.282325b1.css",
+    "main.js": "/Canvas-Image-Enhance-UI/static/js/main.a91c1b4e.js",
+    "index.html": "/Canvas-Image-Enhance-UI/index.html",
+    "main.282325b1.css.map": "/Canvas-Image-Enhance-UI/static/css/main.282325b1.css.map",
+    "main.a91c1b4e.js.map": "/Canvas-Image-Enhance-UI/static/js/main.a91c1b4e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.282325b1.css",
+    "static/js/main.a91c1b4e.js"
+  ]
+}
