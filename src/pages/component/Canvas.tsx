@@ -50,7 +50,6 @@ const Canvas = ({ src }: CanvasProps) => {
             if (!ctx) return;
 
             if (isDragging && image) {
-
                 // 滑鼠不能超過視窗範圍
                 if (e.clientX < 0 || e.clientX > window.innerWidth - 1 || e.clientY < 0 || e.clientY > window.innerHeight - 1) {
                     return;

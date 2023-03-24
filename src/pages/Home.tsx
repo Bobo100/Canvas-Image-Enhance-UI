@@ -9,7 +9,6 @@ export const Home = () => {
     const handleFileChange = (value: string) => {
         navigate('/result', { state: { value } });
         // navigate('/result', { state: { image: value } });
-
     };
 
     function downloadImage() {
